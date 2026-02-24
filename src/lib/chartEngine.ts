@@ -133,12 +133,12 @@ function jobRolesHired(joiners: Employee[]): ChartSpec {
 // ===== ATTRITION SNAPSHOT CHARTS (8) =====
 
 function attritionTrendAll(employees: Employee[]): ChartSpec {
-  const allExits = employees.filter(e => e.date_of_exit);
+  const allExits = employees.filter(e => e.date_of_exit instanceof Date && !isNaN(e.date_of_exit.getTime()));
   const fyMap: Record<string, number> = {};
   const allowedFYs = ['FY-2022', 'FY-2023', 'FY-2024', 'FY-2025', 'FY-2026'];
   allExits.forEach(e => {
     const d = e.date_of_exit!;
-    const month = d.getMonth(); // 0-indexed
+    const month = d.getMonth();
     const year = d.getFullYear();
     const fy = month >= 3 ? `FY-${year + 1}` : `FY-${year}`;
     if (allowedFYs.includes(fy)) fyMap[fy] = (fyMap[fy] || 0) + 1;
