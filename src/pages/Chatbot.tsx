@@ -19,7 +19,7 @@ const SUGGESTED_PROMPTS = [
 ];
 
 export default function Chatbot() {
-  const { employees, fyStart, fyEnd, loadDemo } = useData();
+  const { employees, fyStart, fyEnd, loadDemo, isLoading } = useData();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
