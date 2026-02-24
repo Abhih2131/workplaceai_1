@@ -64,6 +64,11 @@ function validate(rows: Record<string, any>[], colNames: string[]): ValidationRe
   return { missingColumns, duplicateIds, invalidDates, invalidNumbers, nullRates };
 }
 
+function findCol(row: Record<string, any>, ...names: string[]): any {
+  for (const n of names) { if (row[n] !== undefined) return row[n]; }
+  return null;
+}
+
 function rowToEmployee(row: Record<string, any>): Employee {
   const parsed: Employee = {
     date_of_joining: parseDate(row.date_of_joining),
@@ -89,6 +94,14 @@ function rowToEmployee(row: Record<string, any>): Employee {
     competency: safeStr(row.competency),
     employee_name: safeStr(row.employee_name) || safeStr(row.emp_name) || safeStr(row.name),
     employee_id: safeStr(row.employee_id) || safeStr(row.emp_id) || safeStr(row.id),
+    company: safeStr(findCol(row, 'company', 'company_name', 'org', 'organization')),
+    employment_type: safeStr(findCol(row, 'employment_type', 'emp_type', 'type_of_employment')),
+    employment_status: safeStr(findCol(row, 'employment_status', 'emp_status', 'status')),
+    business_unit: safeStr(findCol(row, 'business_unit', 'bu', 'unit')),
+    area: safeStr(findCol(row, 'area', 'region', 'sub_zone')),
+    function_name: safeStr(findCol(row, 'function', 'function_name', 'func')),
+    department: safeStr(findCol(row, 'department', 'dept', 'department_name')),
+    band: safeStr(findCol(row, 'band', 'grade', 'level', 'job_band')),
   };
   return parsed;
 }

@@ -13,12 +13,16 @@ const sectionStyles: Record<SectionType, string> = {
   people: 'border-l-people/80',
   joiners: 'border-l-joiners/80',
   attrition: 'border-l-attrition/80',
+  organization: 'border-l-primary/80',
+  demographics: 'border-l-joiners/80',
 };
 
 const iconBg: Record<SectionType, string> = {
   people: 'bg-people/10 text-people',
   joiners: 'bg-joiners/10 text-joiners',
   attrition: 'bg-attrition/10 text-attrition',
+  organization: 'bg-primary/10 text-primary',
+  demographics: 'bg-joiners/10 text-joiners',
 };
 
 export default function KPICard({ label, value, icon, section, delay = 0 }: KPICardProps) {
