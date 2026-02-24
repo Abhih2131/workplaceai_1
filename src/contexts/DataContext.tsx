@@ -127,10 +127,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <DataContext.Provider value={{
-      employees, uploadResult, isDemo, isMasterFileMode, isLoading, loadError,
+      employees, filteredEmployees, uploadResult, isDemo, isMasterFileMode, isLoading, loadError,
       setData, loadDemo,
       asOfDate, fyStart, fyEnd,
       setAsOfDate, setFyStart, setFyEnd,
+      departments, locations, ratings,
+      selectedDepartment, selectedLocation, selectedRating,
+      setDepartment, setLocation, setRating
     }}>
       {children}
     </DataContext.Provider>

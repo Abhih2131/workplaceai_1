@@ -101,9 +101,9 @@ export default function Dashboard() {
 
         <DateControls onRefresh={handleRefresh} />
 
-        <PeopleSection key={`p-${refreshKey}`} employees={employees} asOfDate={asOfDate} fyStart={fyStart} fyEnd={fyEnd} />
-        <JoinersSection key={`j-${refreshKey}`} employees={employees} asOfDate={asOfDate} fyStart={fyStart} fyEnd={fyEnd} />
-        <AttritionSection key={`a-${refreshKey}`} employees={employees} asOfDate={asOfDate} fyStart={fyStart} fyEnd={fyEnd} />
+        <PeopleSection key={`p-${refreshKey}`} employees={filteredEmployees} asOfDate={asOfDate} fyStart={fyStart} fyEnd={fyEnd} />
+        <JoinersSection key={`j-${refreshKey}`} employees={filteredEmployees} asOfDate={asOfDate} fyStart={fyStart} fyEnd={fyEnd} />
+        <AttritionSection key={`a-${refreshKey}`} employees={filteredEmployees} asOfDate={asOfDate} fyStart={fyStart} fyEnd={fyEnd} />
       </div>
     </div>
   );

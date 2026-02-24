@@ -92,6 +92,7 @@ export default function DateControls({ onRefresh }: { onRefresh?: () => void }) 
           Recompute
         </button>
       )}
+      </div>
     </div>
   );
 }
