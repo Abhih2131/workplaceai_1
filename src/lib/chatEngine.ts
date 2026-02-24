@@ -17,7 +17,49 @@ function findByName(employees: Employee[], name: string): Employee[] {
 export function processQuery(query: string, employees: Employee[], fyStart: Date, fyEnd: Date): ChatResponse {
   const q = query.toLowerCase().trim();
 
-  // Salary lookup
+  // Average CTC queries (must be checked BEFORE individual salary lookup)
+  if (q.includes('average') && (q.includes('ctc') || q.includes('salary'))) {
+    let filtered = [...employees];
+    let description = 'all employees';
+
+    if (q.includes('joiner') || q.includes('joined')) {
+      filtered = filtered.filter(e =>
+        e.date_of_joining && e.date_of_joining >= fyStart && e.date_of_joining <= fyEnd
+      );
+      description = 'joiners this FY';
+    }
+
+    if (q.includes('exit') || q.includes('left')) {
+      filtered = filtered.filter(e =>
+        e.date_of_exit && e.date_of_exit >= fyStart && e.date_of_exit <= fyEnd
+      );
+      description = 'exits this FY';
+    }
+
+    const sourceMatch = q.match(/from\s+(\w+)/i);
+    if (sourceMatch) {
+      const source = sourceMatch[1].toLowerCase();
+      filtered = filtered.filter(e => safeLower(e.hiring_source) === source);
+      description += ` from ${titleCase(source)}`;
+    }
+
+    if (q.includes('female')) {
+      filtered = filtered.filter(e => safeLower(e.gender) === 'female');
+      description = `female ${description}`;
+    } else if (q.includes('male') && !q.includes('female')) {
+      filtered = filtered.filter(e => safeLower(e.gender) === 'male');
+      description = `male ${description}`;
+    }
+
+    const ctcs = filtered.filter(e => e.total_ctc_pa !== null).map(e => e.total_ctc_pa!);
+    const avg = ctcs.length > 0 ? ctcs.reduce((s, v) => s + v, 0) / ctcs.length : 0;
+    if (ctcs.length === 0) {
+      return { text: `No matching employees found for: ${description}.` };
+    }
+    return { text: `Average CTC of ${description}: **₹ ${formatNumber(Math.round(avg))}** (₹ ${(avg / 1e5).toFixed(1)} L)\n\nBased on **${ctcs.length}** employees.` };
+  }
+
+  // Individual salary lookup
   if (q.includes('salary') || q.includes('ctc')) {
     const nameMatch = query.match(/(?:of|for)\s+(.+?)(?:\?|$)/i);
     if (nameMatch) {
@@ -66,6 +108,14 @@ export function processQuery(query: string, employees: Employee[], fyStart: Date
       description += ' (Male)';
     }
 
+    // Sector filter
+    const sectorMatch = q.match(/(?:in|from)\s+(it|finance|hr|operations|marketing|sales|engineering|admin)/i);
+    if (sectorMatch) {
+      const sector = sectorMatch[1].toLowerCase();
+      filtered = filtered.filter(e => safeLower(e.employment_sector) === sector);
+      description += ` in ${titleCase(sector)}`;
+    }
+
     return {
       text: `Found **${formatNumber(filtered.length)}** ${description}.\n\n${filtered.slice(0, 10).map(e => `- ${e.employee_name || 'Unknown'} | ${e.zone || '-'} | Rating: ${e.rating_25 || '-'}`).join('\n')}${filtered.length > 10 ? `\n\n...and ${filtered.length - 10} more.` : ''}`,
       data: filtered.slice(0, 50),
@@ -100,30 +150,6 @@ export function processQuery(query: string, employees: Employee[], fyStart: Date
     }
 
     return { text: `There are **${formatNumber(filtered.length)}** ${description}.` };
-  }
-
-  // Average CTC queries
-  if (q.includes('average') && (q.includes('ctc') || q.includes('salary'))) {
-    let filtered = [...employees];
-    let description = 'all employees';
-
-    if (q.includes('joiner') || q.includes('joined')) {
-      filtered = filtered.filter(e =>
-        e.date_of_joining && e.date_of_joining >= fyStart && e.date_of_joining <= fyEnd
-      );
-      description = 'joiners this FY';
-    }
-
-    const sourceMatch = q.match(/from\s+(\w+)/i);
-    if (sourceMatch) {
-      const source = sourceMatch[1].toLowerCase();
-      filtered = filtered.filter(e => safeLower(e.hiring_source) === source);
-      description += ` from ${titleCase(source)}`;
-    }
-
-    const ctcs = filtered.filter(e => e.total_ctc_pa !== null).map(e => e.total_ctc_pa!);
-    const avg = ctcs.length > 0 ? ctcs.reduce((s, v) => s + v, 0) / ctcs.length : 0;
-    return { text: `Average CTC of ${description}: **₹ ${formatNumber(Math.round(avg))}** (₹ ${(avg / 1e5).toFixed(1)} L)` };
   }
 
   // Default
