@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { Employee, UploadResult } from '@/lib/types';
 import { generateDemoData } from '@/lib/demoData';
 import { MASTER_FILE_TEST_MODE } from '@/lib/config';
@@ -6,6 +6,7 @@ import { loadMasterFile } from '@/lib/masterFileLoader';
 
 interface DataContextType {
   employees: Employee[];
+  filteredEmployees: Employee[];
   uploadResult: UploadResult | null;
   isDemo: boolean;
   isMasterFileMode: boolean;
@@ -19,6 +20,17 @@ interface DataContextType {
   setAsOfDate: (d: Date) => void;
   setFyStart: (d: Date) => void;
   setFyEnd: (d: Date) => void;
+  
+  // Filters
+  departments: string[];
+  locations: string[];
+  ratings: string[];
+  selectedDepartment: string;
+  selectedLocation: string;
+  selectedRating: string;
+  setDepartment: (d: string) => void;
+  setLocation: (l: string) => void;
+  setRating: (r: string) => void;
 }
 
 const DataContext = createContext<DataContextType | null>(null);
